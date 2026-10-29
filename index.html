@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Arindam Ruidas — Computer Science Student &amp; Digital Creator</title>
+
+  <meta
+    name="description"
+    content="Portfolio of Arindam Ruidas — Computer Science student, problem solver, video editor and digital creator from Asansol, West Bengal."
+  />
+
+  <meta name="theme-color" content="#e9e1cf" />
+  <meta name="referrer" content="no-referrer" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https://images.unsplash.com data:; connect-src 'self'; form-action 'self' mailto:"
+  />
+  <link rel="icon" type="image/png" href="assets/images/arindam-logo.png" />
+
+  <!-- Typography: Playfair Display, Inter, Space Grotesk, and JetBrains Mono. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Playfair+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- Custom dot-and-ring cursor -->
+  <div id="cursor-orb"></div>
+
+  <!-- Film Grain Overlay -->
+  <div class="grain-overlay"></div>
+
+  <!-- Skip link for keyboard and screen-reader users -->
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <!-- Header -->
+  <header class="site-header" id="site-header">
+    <div class="container nav-wrapper">
+      <a href="#home" class="brand" aria-label="Arindam Ruidas home">
+        <img class="brand-logo" src="assets/images/arindam-logo.png" alt="" />
+        <span class="brand-name">Arindam Ruidas</span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        id="menu-toggle"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="primary-navigation"
+      >
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav
+        class="primary-navigation"
+        id="primary-navigation"
+        aria-label="Primary navigation"
+      >
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#feedback">Feedback</a>
+        <a href="#contact">Contact</a>
+
+        <a
+          class="nav-resume"
+          href="assets/documents/arindam-ruidas-resume.pdf"
+          target="_blank"
+          rel="noopener"
+          aria-label="Open resume PDF in a new tab"
+        >
+          Resume <span aria-hidden="true">↗</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- Hero -->
+    <section class="hero section" id="home">
+      <div class="container hero-grid">
+        <div class="hero-content reveal">
+          <p class="eyebrow" data-cipher>Computer Science · Creative Technology · Digital Design</p>
+
+          <h1>
+            I build useful software and tell
+            <span class="accent-text">visual stories.</span>
+          </h1>
+
+          <p class="hero-description">
+            I'm Arindam Ruidas, a B.Sc. Computer Science student from Asansol,
+            West Bengal. I combine problem-solving and technology with
+            video editing, digital design and visual storytelling.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="#work">
+              View my work
+              <span aria-hidden="true">↗</span>
+            </a>
+
+            <a class="button button-secondary" href="#contact">
+              Get in touch
+            </a>
+          </div>
+
+          <div class="hero-details">
+            <div>
+              <span class="detail-label">Currently</span>
+              <strong>Learning, building &amp; creating</strong>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="hero-visual reveal">
+          <div class="hero-image-wrap">
+            <img
+              src="assets/images/hero-arindam.png"
+              alt="Arindam looking out over a mountain landscape at sunset"
+              class="hero-image"
+            />
+
+            <div class="floating-card floating-card-top">
+              <span class="floating-icon">⌘</span>
+              <span>Computer Science</span>
+            </div>
+
+            <div class="floating-card floating-card-bottom">
+              <span class="floating-icon">✦</span>
+              <span>Digital Creator</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container hero-scroll">
+        <span>Scroll to explore</span>
+        <span class="scroll-line"></span>
+      </div>
+    </section>
+
+    <!-- Credibility strip -->
+    <section class="credibility section-small" aria-label="Education and interests">
+      <div class="container">
+        <div class="credibility-grid">
+          <div class="credibility-item">
+            <span class="credibility-label" data-cipher>Education</span>
+            <strong>Michael Madhusudan Memorial College</strong>
+            <small>B.Sc. Computer Science · 2025–2029</small>
+          </div>
+
+          <div class="credibility-item">
+            <span class="credibility-label" data-cipher>University</span>
+            <strong>Kazi Nazrul University</strong>
+            <small>Academic foundation in computer science</small>
+          </div>
+
+          <div class="credibility-item">
+            <span class="credibility-label" data-cipher>Creative focus</span>
+            <strong>Video Editing &amp; Design</strong>
+            <small>DaVinci Resolve, Photoshop, Canva</small>
+          </div>
+
+          <div class="credibility-item placeholder-item">
+            <span class="credibility-label" data-cipher>Coming soon</span>
+            <strong>Achievements &amp; testimonials</strong>
+            <small>Add hackathons, courses and client feedback here</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Work -->
+    <section class="section work-section" id="work">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow" data-cipher>Selected work</p>
+            <h2>Things I'm building<br />and creating.</h2>
+          </div>
+
+          <p class="section-intro">
+            A growing collection of software projects, creative experiments
+            and visual work.
+          </p>
+        </div>
+
+        <!-- Filter controls -->
+        <div class="filter-controls reveal" role="group" aria-label="Filter projects">
+          <button class="filter-button active" data-filter="all">
+            All work
+          </button>
+
+          <button class="filter-button" data-filter="web">
+            Web
+          </button>
+
+          <button class="filter-button" data-filter="ai">
+            AI / ML
+          </button>
+
+          <button class="filter-button" data-filter="creative">
+            Creative
+          </button>
+        </div>
+
+        <!-- Project grid -->
+        <div class="project-grid" id="project-grid">
+          <article class="project-card reveal" data-category="web">
+            <div class="project-media project-media-one">
+              <img
+                class="project-photo"
+                src="assets/images/project-portfolio.jpg"
+                alt="A dual-screen creative workspace displaying code and a portfolio"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="project-number" data-cipher>01</span>
+              <span class="project-type">Web concept</span>
+            </div>
+
+            <div class="project-content">
+              <div class="project-card-header">
+                <h3>Personal Portfolio</h3>
+                <span class="project-arrow" aria-hidden="true">↗</span>
+              </div>
+
+              <p>
+                A clean, responsive personal website focused on projects,
+                learning and creative work.
+              </p>
+
+              <div class="tag-list">
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JavaScript</span>
+              </div>
+
+              <div class="project-links">
+                <a href="#" aria-label="View personal portfolio live project">
+                  Live ↗
+                </a>
+                <a href="#" aria-label="View personal portfolio GitHub repository">
+                  GitHub ↗
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-category="ai">
+            <div class="project-media project-media-two">
+              <img
+                class="project-photo"
+                src="assets/images/project-learning-lab.jpg"
+                alt="Close-up of a computer circuit board"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="project-number" data-cipher>02</span>
+              <span class="project-type">AI / ML placeholder</span>
+            </div>
+
+            <div class="project-content">
+              <div class="project-card-header">
+                <h3>Learning Lab</h3>
+                <span class="project-arrow" aria-hidden="true">↗</span>
+              </div>
+
+              <p>
+                A placeholder for a future generative AI, machine learning or
+                computer science project.
+              </p>
+
+              <div class="tag-list">
+                <span>Python</span>
+                <span>AI</span>
+                <span>Problem Solving</span>
+              </div>
+
+              <div class="project-links">
+                <a href="#" aria-label="View Learning Lab project">
+                  View project ↗
+                </a>
+                <a href="#" aria-label="View Learning Lab GitHub repository">
+                  GitHub ↗
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-category="creative">
+            <div class="project-media project-media-three">
+              <img
+                class="project-photo"
+                src="assets/images/project-colour-motion.jpg"
+                alt="A quiet city street at night washed in cinematic blue and magenta light"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="project-number" data-cipher>03</span>
+              <span class="project-type">Video editing</span>
+            </div>
+
+            <div class="project-content">
+              <div class="project-card-header">
+                <h3>Colour &amp; Motion</h3>
+                <span class="project-arrow" aria-hidden="true">↗</span>
+              </div>
+
+              <p>
+                A placeholder case study for video editing, colour grading and
+                promotional content.
+              </p>
+
+              <div class="tag-list">
+                <span>DaVinci Resolve</span>
+                <span>Canva</span>
+                <span>Editing</span>
+              </div>
+
+              <div class="project-links">
+                <a href="#" aria-label="View Colour and Motion case study">
+                  View case study ↗
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Case study -->
+        <article class="case-study reveal">
+          <div class="case-study-heading">
+            <div>
+              <p class="eyebrow" data-cipher>Featured case study</p>
+              <h2>From raw idea<br />to finished story.</h2>
+            </div>
+
+            <p>
+              Use this section to explain one important software project or
+              creative assignment in more detail.
+            </p>
+          </div>
+
+          <div class="case-study-grid">
+            <div class="case-study-block">
+              <span class="case-label" data-cipher>01 / Problem</span>
+              <h3>What need did it solve?</h3>
+              <p>
+                Describe the original challenge in one or two clear sentences.
+                Focus on the user, client or audience and what they needed.
+              </p>
+            </div>
+
+            <div class="case-study-block">
+              <span class="case-label" data-cipher>02 / My role &amp; stack</span>
+              <h3>What did I build?</h3>
+              <p>
+                Explain your contribution and list the tools used. For example:
+                HTML, CSS, JavaScript, Python, DaVinci Resolve or
+                Photoshop.
+              </p>
+            </div>
+
+            <div class="case-study-block">
+              <span class="case-label" data-cipher>03 / Process</span>
+              <h3>What decisions mattered?</h3>
+              <p>
+                Share two or three decisions, trade-offs or lessons from the
+                project. This makes the work more credible than a screenshot
+                alone.
+              </p>
+            </div>
+
+            <div class="case-study-block">
+              <span class="case-label" data-cipher>04 / Outcome</span>
+              <h3>What changed?</h3>
+              <p>
+                Add a result, metric, demo link, client feedback or a before and
+                after comparison when available.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <div class="center-cta reveal">
+          <a class="button button-primary" href="#contact">
+            Let's build something together
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section about-section" id="about">
+      <div class="container about-grid">
+        <div class="about-image-column reveal">
+          <img
+            src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1000&q=85"
+            alt="Laptop with code on screen — workspace placeholder"
+            class="about-image"
+          />
+
+          <div class="image-caption">
+            <span>Behind the scenes</span>
+            <strong>Building &amp; Creating</strong>
+          </div>
+        </div>
+
+        <div class="about-content reveal">
+          <p class="eyebrow" data-cipher>A bit about me</p>
+
+          <h2>Technical curiosity with a creative point of view.</h2>
+
+          <p>
+            My journey began with curiosity about how technology works. As a
+            Computer Science student at Michael Madhusudan Memorial College, I
+            am building a foundation in programming, logic and problem-solving.
+          </p>
+
+          <p>
+            Alongside academics, I work on video editing and digital design
+            projects. This creative work has taught me how to understand
+            audiences, manage projects, communicate clearly and turn an idea
+            into something people can experience.
+          </p>
+
+          <p>
+            I'm currently working toward becoming a stronger developer while
+            continuing to grow as a digital creator.
+          </p>
+
+          <ul class="skills-list" aria-label="Core skills">
+            <li>CS fundamentals &amp; problem-solving</li>
+            <li>DaVinci Resolve video editing</li>
+            <li>Adobe Photoshop</li>
+            <li>Canva &amp; visual communication</li>
+          </ul>
+
+          <div class="personal-note">
+            <span aria-hidden="true">✦</span>
+            Sports and fitness have taught me discipline, consistency
+            and teamwork.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strengths -->
+    <section class="section-small strengths-section">
+      <div class="container strengths-grid">
+        <div class="strength-item reveal">
+          <span class="strength-number" data-cipher>01</span>
+          <h3>Problem-solving</h3>
+          <p>I enjoy breaking complex ideas into smaller, practical steps.</p>
+        </div>
+
+        <div class="strength-item reveal">
+          <span class="strength-number" data-cipher>02</span>
+          <h3>Team collaboration</h3>
+          <p>Sports have helped me develop communication, discipline and trust.</p>
+        </div>
+
+        <div class="strength-item reveal">
+          <span class="strength-number" data-cipher>03</span>
+          <h3>Visual storytelling</h3>
+          <p>I use video, colour and editing to communicate emotion and meaning.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feedback -->
+    <section class="section feedback-section" id="feedback">
+      <div class="container">
+        <div class="feedback-heading reveal">
+          <p class="eyebrow" data-cipher>What people say</p>
+          <h2>Feedback &amp; Reviews</h2>
+        </div>
+
+        <div class="feedback-wall" id="feedback-wall">
+          <!-- Dynamic feedback cards rendered by JS -->
+        </div>
+        <p class="no-feedback" id="no-feedback" style="display: none;">
+          Be the first to leave feedback ✦
+        </p>
+
+        <div class="feedback-form-wrap reveal">
+          <h3>Leave your feedback</h3>
+
+          <form id="feedback-form">
+            <div class="star-rating" id="star-rating">
+              <span class="star" data-value="1">☆</span>
+              <span class="star" data-value="2">☆</span>
+              <span class="star" data-value="3">☆</span>
+              <span class="star" data-value="4">☆</span>
+              <span class="star" data-value="5">☆</span>
+            </div>
+
+            <div class="form-field">
+              <label for="fb-name">Your name</label>
+              <input id="fb-name" name="fb-name" type="text" autocomplete="name" required />
+            </div>
+
+            <div class="form-field">
+              <label for="fb-role">Your role (optional)</label>
+              <input id="fb-role" name="fb-role" type="text" autocomplete="organization-title" />
+            </div>
+
+            <div class="form-field">
+              <label for="fb-message">Your message</label>
+              <textarea id="fb-message" name="fb-message" rows="3" required></textarea>
+            </div>
+
+            <button class="button button-primary" type="submit">
+              Submit feedback <span aria-hidden="true">✦</span>
+            </button>
+
+            <p class="form-status" id="fb-status" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section contact-section" id="contact">
+      <div class="container contact-grid">
+        <div class="contact-content reveal">
+          <p class="eyebrow" data-cipher>Let's connect</p>
+
+          <h2>Have an idea, opportunity or project in mind?</h2>
+
+          <p>
+            I'm open to internships, freelance development work, video editing
+            projects and creative collaborations.
+          </p>
+
+          <a
+            class="email-link"
+            href="#contact"
+            data-email-link
+          >
+            Email me
+          </a>
+        </div>
+
+        <form class="contact-form reveal" id="contact-form">
+          <div class="form-field">
+            <label for="name">Your name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="message">Tell me about your idea</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              required
+            ></textarea>
+          </div>
+
+          <button class="button button-primary" type="submit">
+            Send message
+            <span aria-hidden="true">↗</span>
+          </button>
+
+          <p class="form-status" id="form-status" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-top">
+      <div>
+        <p class="eyebrow" data-cipher>Have a project in mind?</p>
+        <h2>Let's make it real.</h2>
+      </div>
+
+      <a class="button button-primary" href="#contact">
+        Start a conversation
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+
+    <div class="container footer-bottom">
+      <div>
+        <a href="#home" class="footer-brand">Arindam Ruidas</a>
+        <p>Computer Science student · Digital Creator</p>
+        <p>Asansol, West Bengal, India</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#contact" data-email-link>Email</a>
+        <a
+          href="https://github.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://www.linkedin.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          LinkedIn
+        </a>
+        <a
+          href="https://www.instagram.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Instagram
+        </a>
+      </div>
+
+      <p class="copyright">
+        © <span id="current-year"></span> Arindam Ruidas
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
