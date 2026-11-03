@@ -565,6 +565,64 @@
       h1 { font-size: 35px; }
       footer { flex-direction: column; }
     }
+    .metric, .device, .mode-button, .switch, .text-button, .chat-form button {
+      -webkit-tap-highlight-color: transparent;
+    }
+    .metric-value {
+      display: inline-block;
+      transform-origin: left center;
+    }
+    .metric-value.is-updating { animation: value-nudge .38s cubic-bezier(.2,.8,.2,1); }
+    @keyframes value-nudge {
+      0% { opacity: .58; transform: translateY(5px) scale(.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .device[data-on="true"] .device-icon {
+      box-shadow: 0 0 0 4px rgba(90, 151, 110, .08), 0 5px 16px rgba(61, 127, 86, .1);
+      transition: box-shadow .25s ease, color .25s ease, background .25s ease;
+    }
+    .device[data-on="true"] .switch::after { box-shadow: 0 1px 5px rgba(20, 54, 37, .22); }
+    .switch:active::after { width: 20px; }
+    .mode-button:active, .apply-button:active, .text-button:active, .chat-form button:active {
+      transform: scale(.97);
+    }
+    .quick-prompts { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+    .prompt-chip {
+      border: 1px solid rgba(46,75,63,.12);
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: rgba(247,249,245,.8);
+      color: #536c5d;
+      font-size: 10px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .prompt-chip:hover {
+      transform: translateY(-2px);
+      border-color: rgba(66,128,92,.35);
+      background: #edf5ed;
+      box-shadow: 0 5px 14px rgba(37, 88, 59, .08);
+    }
+    .prompt-chip:active { transform: scale(.97); }
+    .chat-message { animation: message-in .24s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes message-in {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pulse { animation: live-pulse 2.4s ease-in-out infinite; }
+    @keyframes live-pulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(67,166,126,.13); }
+      50% { box-shadow: 0 0 0 7px rgba(67,166,126,.045); }
+    }
+    @media (max-width: 410px) {
+      .quick-prompts { gap: 6px; }
+      .prompt-chip { font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pulse { animation: none; }
+      .chat-message { animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -780,6 +838,11 @@
               <input id="chatInput" type="text" maxlength="160" placeholder="Ask a quick question…" autocomplete="off" />
               <button type="submit" aria-label="Send question"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </form>
+            <div class="quick-prompts" aria-label="Suggested questions">
+              <button class="prompt-chip" type="button" data-question="How can I get under quota?">Cut my forecast</button>
+              <button class="prompt-chip" type="button" data-question="Rush to class">I'm heading out</button>
+              <button class="prompt-chip" type="button" data-question="Why is my AC using so much power?">Explain my estimate</button>
+            </div>
             <p class="chat-disclaimer">Demo replies are generated locally from simple rules.</p>
           </section>
         </aside>
@@ -813,8 +876,21 @@
       let ecoMode = false;
       let activeMode = "study";
       let toastTimer;
+      $("#currentDate").textContent = new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric"
+      }).format(new Date()).toUpperCase();
 
       const format = (number) => number.toFixed(2);
+      function setAnimatedValue(selector, value) {
+        const element = $(selector);
+        const text = String(value);
+        if (element.textContent === text) return;
+        element.textContent = text;
+        element.classList.remove("is-updating");
+        requestAnimationFrame(() => element.classList.add("is-updating"));
+      }
       const liveWatts = () => Object.values(devices).reduce(
         (sum, device) => sum + (device.on ? (device.ecoWatts && ecoMode ? device.ecoWatts : device.watts) : 0),
         0
@@ -877,9 +953,9 @@
         $("#usedValue").textContent = format(usedToday);
         $("#quotaValue").textContent = format(quota);
         $("#remainingValue").textContent = format(Math.max(0, quota - usedToday));
-        $("#liveValue").textContent = (loadKw).toFixed(2);
+        setAnimatedValue("#liveValue", loadKw.toFixed(2));
         $("#activeCount").textContent = Object.values(devices).filter((device) => device.on).length;
-        $("#projectedValue").textContent = format(projected);
+        setAnimatedValue("#projectedValue", format(projected));
         $("#hoursValue").textContent = hours.toFixed(1);
         fill.style.width = `${usedPercent}%`;
         $("#budgetProgress").setAttribute("aria-valuenow", format(usedToday));
@@ -1009,11 +1085,6 @@
             devices.ac.setting = "Eco · 26°C";
             $("#modeStatus").textContent = "Custom setup · Eco";
             modeButtons.forEach((button) => button.setAttribute("aria-pressed", "false"));
-            $("#currentDate").textContent = new Intl.DateTimeFormat("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric"
-            }).format(new Date()).toUpperCase();
             updateDashboard();
             return `Eco cooling lowers this sample's estimated room draw. Forecast: ${format(usedToday + liveWatts() / 1000 * Number(hoursSlider.value))} of ${format(quota)} kWh.`;
           }
@@ -1034,6 +1105,12 @@
         chatInput.value = "";
         const reply = localReply(question);
         setTimeout(() => addMessage(reply, "assistant"), 220);
+      });
+      document.querySelectorAll("[data-question]").forEach((button) => {
+        button.addEventListener("click", () => {
+          chatInput.value = button.dataset.question;
+          chatForm.requestSubmit();
+        });
       });
 
       updateDashboard();
