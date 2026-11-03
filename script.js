@@ -15,6 +15,9 @@
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches;
+  const hasFinePointer = window.matchMedia(
+    "(hover: hover) and (pointer: fine)"
+  ).matches;
 
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
@@ -23,13 +26,6 @@
       97, 114, 105, 110, 100, 97, 109, 114, 117, 105, 100, 97,
       115, 56, 64, 103, 109, 97, 105, 108, 46, 99, 111, 109
     );
-
-  $$('[data-email-link]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      event.preventDefault();
-      window.location.href = `mailto:${getEmailAddress()}`;
-    });
-  });
 
   /* ═══════════════════════════════════════════════════════════
      MOBILE NAVIGATION
@@ -44,7 +40,6 @@
     primaryNav.classList.remove("is-open");
     menuToggle.setAttribute("aria-expanded", "false");
     menuToggle.setAttribute("aria-label", "Open navigation menu");
-    document.body.classList.remove("menu-open");
   }
 
   if (menuToggle && primaryNav) {
@@ -55,7 +50,6 @@
         "aria-label",
         isOpen ? "Close navigation menu" : "Open navigation menu"
       );
-      document.body.classList.toggle("menu-open", isOpen);
     });
 
     $$("a", primaryNav).forEach((link) =>
@@ -351,10 +345,7 @@
   /* ═══════════════════════════════════════════════════════════
      DOT-AND-RING CURSOR
      ═══════════════════════════════════════════════════════════ */
-  if (
-    !prefersReducedMotion &&
-    window.matchMedia("(hover: hover) and (pointer: fine)").matches
-  ) {
+  if (!prefersReducedMotion && hasFinePointer) {
     const orb = $("#cursor-orb");
     if (orb) {
       const pointer = { x: -100, y: -100 };
@@ -440,7 +431,7 @@
     });
   }
 
-  if (!prefersReducedMotion) {
+  if (!prefersReducedMotion && hasFinePointer) {
     $$(".project-card, .strength-item, .case-study-block").forEach(
       registerMagneticTilt
     );
@@ -452,6 +443,7 @@
      grain overlay background — no external assets needed.
      ═══════════════════════════════════════════════════════════ */
   (function initGrain() {
+    if (!hasFinePointer) return;
     const grainEl = $(".grain-overlay");
     if (!grainEl) return;
 
