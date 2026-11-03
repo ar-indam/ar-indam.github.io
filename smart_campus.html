@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f4f4ef" />
+  <meta name="description" content="Smart Campus energy dashboard prototype for dorm power, student quotas, and rush-hour routines." />
+  <title>Roomwise — Campus energy, made human</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f4ef;
+      --surface: #fff;
+      --ink: #182622;
+      --muted: #74817b;
+      --line: #e5e9e3;
+      --green: #256c57;
+      --green-dark: #173c32;
+      --green-soft: #e8f2ed;
+      --lime: #d7f27c;
+      --amber: #c88135;
+      --amber-soft: #fbf0df;
+      --red: #c85348;
+      --red-soft: #fbebe8;
+      --blue: #477a9d;
+      --shadow: 0 18px 50px rgba(27, 47, 39, .07);
+      --radius: 22px;
+      --font: Inter, "DM Sans", "Segoe UI", system-ui, sans-serif;
+      --mono: "JetBrains Mono", "Cascadia Code", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 87% 2%, rgba(215, 242, 124, .2), transparent 25rem),
+        var(--paper);
+      color: var(--ink);
+      font: 16px/1.5 var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible {
+      outline: 3px solid #78a98f;
+      outline-offset: 3px;
+    }
+    .shell { max-width: 1440px; margin: auto; padding: 0 40px 64px; }
+    .topbar {
+      height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(24, 38, 34, .08);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand-mark {
+      width: 39px; height: 39px; display: grid; place-items: center;
+      border-radius: 13px; color: var(--lime); background: var(--green-dark);
+    }
+    .brand-name { font-size: 19px; font-weight: 750; letter-spacing: -.8px; }
+    .brand-name span { color: var(--green); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: #64716b; text-decoration: none; font-size: 13px; font-weight: 650;
+      transition: color .2s ease;
+    }
+    .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--green); }
+    .top-actions { display: flex; align-items: center; gap: 12px; }
+    .live-pill, .demo-pill {
+      display: inline-flex; gap: 8px; align-items: center;
+      border: 1px solid var(--line); background: rgba(255,255,255,.7);
+      border-radius: 999px; padding: 8px 12px; color: #52635b;
+      font-size: 11px; font-weight: 700;
+    }
+    .pulse { width: 7px; height: 7px; border-radius: 50%; background: #43a67e; box-shadow: 0 0 0 4px rgba(67,166,126,.13); }
+    .avatar { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 50%; background: #e8d8c0; color: #624a34; font-size: 12px; font-weight: 800; }
+
+    .welcome {
+      display: flex; justify-content: space-between; align-items: end;
+      padding: 35px 0 24px; gap: 24px;
+    }
+    .eyebrow {
+      margin: 0 0 8px; color: var(--green); font: 700 10px/1.3 var(--mono);
+      letter-spacing: 1.25px; text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(29px, 3.3vw, 42px); line-height: 1.08; letter-spacing: -1.9px; font-weight: 720; }
+    .welcome-copy { margin: 10px 0 0; color: #77827c; font-size: 14px; }
+    .room-select {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border: 1px solid var(--line); border-radius: 13px;
+      background: rgba(255,255,255,.72); font-size: 12px; font-weight: 700;
+    }
+    .room-select svg { color: var(--green); }
+    .room-select .chevron { color: #9aa49f; margin-left: 9px; }
+
+    .notice {
+      display: flex; align-items: center; gap: 11px;
+      background: #edf5ef; border: 1px solid #dcebe1; border-radius: 13px;
+      padding: 10px 14px; color: #50665a; font-size: 11px;
+      margin-bottom: 18px;
+    }
+    .notice strong { color: #2b5f49; }
+    .notice svg { flex: 0 0 auto; color: var(--green); }
+
+    .metric-grid {
+      display: grid; grid-template-columns: 1.18fr 1fr 1fr; gap: 15px;
+      margin-bottom: 18px;
+    }
+    .metric {
+      min-height: 157px; position: relative; overflow: hidden;
+      background: var(--surface); border: 1px solid rgba(26, 48, 39, .055);
+      border-radius: var(--radius); padding: 20px 21px; box-shadow: 0 4px 20px rgba(25,49,39,.025);
+    }
+    .metric-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .metric-label { color: #78837d; font-size: 11px; font-weight: 650; }
+    .metric-icon { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 10px; background: #f0f5ef; color: var(--green); }
+    .metric-main { display: flex; align-items: baseline; gap: 7px; margin-top: 15px; }
+    .metric-value { font-size: 31px; font-weight: 720; letter-spacing: -1.7px; line-height: 1; }
+    .metric-unit { color: #839089; font-size: 12px; font-weight: 600; }
+    .metric-note { margin: 9px 0 0; color: #849089; font-size: 10px; }
+    .budget-track { height: 6px; background: #edf0e9; border-radius: 99px; overflow: hidden; margin-top: 15px; }
+    .budget-fill { height: 100%; width: 60%; background: var(--green); border-radius: inherit; transition: width .45s ease, background .3s ease; }
+    .metric.is-warning .budget-fill { background: var(--amber); }
+    .metric.is-danger .budget-fill { background: var(--red); }
+    .metric-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      border-radius: 999px; padding: 5px 8px; font-size: 9px; font-weight: 750;
+      color: var(--green); background: var(--green-soft);
+    }
+    .metric-tag.warning { color: #966125; background: var(--amber-soft); }
+    .metric-tag.danger { color: #a7473d; background: var(--red-soft); }
+    .metric-projection { background: #fbfaf6; }
+    .metric-projection .metric-icon { color: #a66c27; background: #f9f0e2; }
+
+    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.72fr) minmax(310px, .88fr); gap: 18px; align-items: start; }
+    .panel {
+      background: var(--surface); border: 1px solid rgba(26,48,39,.055);
+      border-radius: var(--radius); box-shadow: 0 4px 20px rgba(25,49,39,.025);
+    }
+    .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; padding: 21px 22px 15px; }
+    .panel-title { margin: 0; font-size: 16px; font-weight: 720; letter-spacing: -.45px; }
+    .panel-subtitle { margin: 5px 0 0; color: #89938e; font-size: 10px; }
+    .text-button {
+      background: transparent; border: 0; color: var(--green); font-size: 10px;
+      font-weight: 750; cursor: pointer; padding: 5px 0;
+    }
+    .section-rule { height: 1px; margin: 0 22px; background: #eef0ec; }
+
+    .mode-row { display: flex; gap: 8px; overflow-x: auto; padding: 0 22px 18px; scrollbar-width: thin; }
+    .mode-button {
+      flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px;
+      border: 1px solid var(--line); background: #fff; border-radius: 10px;
+      padding: 9px 11px; color: #64716b; font-size: 10px; font-weight: 700;
+      cursor: pointer; transition: .2s ease;
+    }
+    .mode-button:hover { border-color: #b7d1c1; color: var(--green); transform: translateY(-1px); }
+    .mode-button[aria-pressed="true"] { border-color: #a9cbb8; background: #f0f7f2; color: #225d47; }
+    .mode-button svg { color: currentColor; }
+    .device-list { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; padding: 0 22px 21px; }
+    .device {
+      min-width: 0; display: flex; align-items: center; gap: 12px;
+      border: 1px solid #eaede8; border-radius: 14px; background: #fff;
+      padding: 13px; transition: border-color .2s ease, background .2s ease;
+    }
+    .device[data-on="true"] { border-color: #c8ddd0; background: #fcfefb; }
+    .device-icon {
+      width: 39px; height: 39px; flex: 0 0 auto; display: grid; place-items: center;
+      color: #708079; background: #f1f3ef; border-radius: 12px;
+    }
+    .device[data-on="true"] .device-icon { color: var(--green); background: #eaf3ed; }
+    .device-copy { min-width: 0; flex: 1; }
+    .device-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 730; }
+    .device-meta { display: block; margin-top: 4px; color: #8a948e; font-size: 9px; }
+    .switch {
+      width: 37px; height: 21px; position: relative; flex: 0 0 auto;
+      border: 0; border-radius: 99px; background: #dfe4df; cursor: pointer;
+      transition: background .2s ease;
+    }
+    .switch::after {
+      content: ""; position: absolute; width: 15px; height: 15px; top: 3px; left: 3px;
+      border-radius: 50%; background: white; box-shadow: 0 1px 3px #0002;
+      transition: transform .2s ease;
+    }
+    .switch[aria-checked="true"] { background: var(--green); }
+    .switch[aria-checked="true"]::after { transform: translateX(16px); }
+    .switch:focus-visible { outline-offset: 4px; }
+    .control-foot {
+      display: flex; justify-content: space-between; align-items: center; gap: 15px;
+      margin: 0 22px; padding: 13px 0 17px; border-top: 1px solid #eef0ec;
+    }
+    .control-foot p { margin: 0; color: #8a948e; font-size: 9px; }
+    .remaining-control { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+    .remaining-control label { color: #76827b; font-size: 9px; }
+    input[type="range"] { width: 86px; accent-color: var(--green); }
+    .hours-value { width: 27px; color: var(--ink); font: 700 10px var(--mono); }
+
+    .side-stack { display: grid; gap: 16px; }
+    .copilot {
+      position: relative; overflow: hidden; padding: 20px;
+      color: #f7fbf4; background:
+        radial-gradient(circle at 100% 0%, rgba(215,242,124,.12), transparent 45%),
+        linear-gradient(145deg, #1d4739, #17382f);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .copilot::after {
+      content: ""; position: absolute; width: 150px; height: 150px; right: -74px; bottom: -96px;
+      border: 1px solid rgba(215,242,124,.15); border-radius: 50%;
+      box-shadow: 0 0 0 18px rgba(215,242,124,.035), 0 0 0 38px rgba(215,242,124,.025);
+      pointer-events: none;
+    }
+    .copilot-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .copilot-brand { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 750; }
+    .copilot-star { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 9px; background: rgba(215,242,124,.14); color: var(--lime); }
+    .sim-tag { padding: 5px 7px; border: 1px solid rgba(255,255,255,.15); border-radius: 999px; color: #c0d0c4; font: 650 8px var(--mono); letter-spacing: .3px; }
+    .copilot h2 { margin: 20px 0 7px; font-size: 18px; line-height: 1.25; letter-spacing: -.5px; }
+    .copilot-copy { margin: 0; color: #c1d0c6; font-size: 10px; line-height: 1.65; }
+    .insight-card {
+      position: relative; margin-top: 15px; padding: 13px;
+      border: 1px solid rgba(255,255,255,.1); border-radius: 13px;
+      background: rgba(255,255,255,.065);
+    }
+    .insight-label { display: flex; align-items: center; gap: 6px; color: var(--lime); font: 700 8px var(--mono); letter-spacing: .65px; text-transform: uppercase; }
+    .insight-card h3 { margin: 9px 0 5px; color: #fff; font-size: 11px; line-height: 1.4; }
+    .insight-card p { margin: 0; color: #bed0c4; font-size: 9px; line-height: 1.6; }
+    .apply-button {
+      width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;
+      margin-top: 12px; padding: 10px 12px; border: 0; border-radius: 10px;
+      background: var(--lime); color: #1d3b2e; font-size: 10px; font-weight: 800;
+      cursor: pointer; transition: transform .2s ease, background .2s ease;
+    }
+    .apply-button:hover { transform: translateY(-1px); background: #e2fb91; }
+    .apply-button:disabled { cursor: default; opacity: .7; transform: none; }
+    .copilot-foot { margin: 12px 0 0; color: #a8beb0; font-size: 8px; text-align: center; }
+
+    .quota-panel { padding-bottom: 17px; }
+    .quota-head { padding-bottom: 12px; }
+    .quota-set {
+      display: flex; align-items: center; gap: 8px;
+      margin: 0 20px 14px; padding: 10px 11px; border-radius: 11px;
+      background: #f7f8f4; color: #78847d; font-size: 9px;
+    }
+    .quota-set strong { margin-left: auto; color: var(--ink); font: 700 11px var(--mono); }
+    .quota-set input { width: 59px; border: 1px solid #dfe6dc; border-radius: 7px; padding: 4px 5px; font: 700 10px var(--mono); color: var(--ink); }
+    .chart-wrap { padding: 0 17px; }
+    .chart {
+      width: 100%; height: 105px; display: block; overflow: visible;
+    }
+    .chart-label { fill: #98a29c; font: 8px var(--mono); }
+    .chart-grid { stroke: #edf0eb; stroke-width: 1; }
+    .chart-area { fill: url(#areaFill); }
+    .chart-line { fill: none; stroke: #47866b; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .chart-point { fill: #fff; stroke: #47866b; stroke-width: 2; }
+    .chart-caption { display: flex; justify-content: space-between; padding: 4px 4px 0; color: #9aa39e; font-size: 8px; }
+    .chart-caption strong { color: #56665d; font-weight: 700; }
+
+    .copilot-chat { padding: 17px; }
+    .chat-title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 12px; font-weight: 730; }
+    .chat-title svg { color: var(--green); }
+    .chat-log { display: grid; gap: 8px; max-height: 150px; overflow-y: auto; }
+    .chat-message { max-width: 92%; padding: 9px 11px; border-radius: 11px; font-size: 9px; line-height: 1.55; }
+    .chat-message.assistant { justify-self: start; color: #586860; background: #f1f5ef; border-bottom-left-radius: 4px; }
+    .chat-message.user { justify-self: end; color: #fff; background: #356e59; border-bottom-right-radius: 4px; }
+    .chat-form { display: flex; align-items: center; gap: 7px; margin-top: 11px; }
+    .chat-form input {
+      width: 100%; min-width: 0; border: 1px solid #e8ece6; border-radius: 10px;
+      padding: 10px; background: #fbfcfa; color: var(--ink); font-size: 9px;
+    }
+    .chat-form button {
+      width: 34px; height: 34px; flex: 0 0 auto; display: grid; place-items: center;
+      border: 0; border-radius: 10px; color: #fff; background: var(--green); cursor: pointer;
+    }
+    .chat-disclaimer { margin: 8px 0 0; color: #98a29b; font-size: 8px; }
+    .toast {
+      position: fixed; z-index: 20; left: 50%; bottom: 24px; transform: translate(-50%, 18px);
+      padding: 11px 16px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px;
+      color: #fff; background: #1d3f33; box-shadow: var(--shadow); font-size: 11px;
+      opacity: 0; pointer-events: none; transition: .25s ease;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 22px; color: #98a19b; font-size: 9px; }
+    footer a { color: var(--green); font-weight: 700; text-decoration: none; }
+
+    @media (max-width: 1000px) {
+      .shell { padding: 0 24px 48px; }
+      .dashboard-grid { grid-template-columns: minmax(0,1.3fr) minmax(290px,.9fr); }
+      .device-list { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .shell { padding: 0 16px 36px; }
+      .topbar { height: 68px; }
+      .nav-links { display: none; }
+      .demo-pill { display: none; }
+      .welcome { align-items: flex-start; flex-direction: column; padding: 27px 0 20px; }
+      h1 { font-size: 33px; }
+      .metric-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .metric { min-height: 137px; padding: 16px; border-radius: 17px; }
+      .metric:first-child { grid-column: 1 / -1; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .device-list { grid-template-columns: repeat(2, minmax(0,1fr)); padding: 0 15px 16px; }
+      .panel-head { padding: 18px 16px 12px; }
+      .mode-row { padding: 0 15px 15px; }
+      .section-rule { margin: 0 16px; }
+      .control-foot { margin: 0 16px; align-items: flex-start; flex-direction: column; }
+      .copilot { padding: 18px; }
+    }
+    @media (max-width: 410px) {
+      .device-list { grid-template-columns: 1fr; }
+      .metric-value { font-size: 28px; }
+      .top-actions { gap: 8px; }
+      .live-pill { padding: 7px 9px; font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#overview" aria-label="Roomwise home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M13.2 2.8 5.6 13h5.2l-.4 8.2L18.4 11h-5.2l0-8.2Z" fill="currentColor"/></svg>
+        </span>
+        <span class="brand-name">room<span>wise</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#overview" aria-current="page">Overview</a>
+        <a href="#appliances">My room</a>
+        <a href="#insights">Energy insights</a>
+      </nav>
+      <div class="top-actions">
+        <span class="demo-pill">PROTOTYPE · NO HARDWARE CONNECTED</span>
+        <span class="live-pill"><span class="pulse" aria-hidden="true"></span> Live estimate</span>
+        <span class="avatar" aria-label="Arindam Ruidas">AR</span>
+      </div>
+    </header>
+
+    <main id="overview">
+      <section class="welcome" aria-labelledby="welcome-title">
+        <div>
+          <p class="eyebrow"><span id="currentDate">TODAY</span> · CAMPUS ENERGY</p>
+          <h1 id="welcome-title">Your room, in balance.</h1>
+          <p class="welcome-copy">A clearer view of your power. A calmer start to your day.</p>
+        </div>
+        <div class="room-select" aria-label="Selected room: Maple Hall, room B-214">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 21h18M5 21V5l7-3 7 3v16M9 8h.01M15 8h.01M9 12h.01M15 12h.01M10 21v-5h4v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Maple Hall <span style="color:#99a39d;font-weight:500">/ Room B-214</span></span>
+          <svg class="chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </section>
+
+      <div class="notice" role="note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 3.9 2.6 17.2A2 2 0 0 0 4.3 20h15.4a2 2 0 0 0 1.7-2.8L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><strong>Illustrative demo:</strong> appliance wattages and quota are sample values. Switches update this prototype only; they do not control real dorm equipment.</span>
+      </div>
+
+      <section class="metric-grid" aria-label="Today's energy summary">
+        <article class="metric" id="budgetMetric">
+          <div class="metric-top">
+            <span class="metric-label">Today's quota</span>
+            <span class="metric-tag" id="quotaStatus"><span aria-hidden="true">●</span> On track</span>
+          </div>
+          <div class="metric-main">
+            <span class="metric-value" id="usedValue">3.60</span>
+            <span class="metric-unit">/ <span id="quotaValue">6.00</span> kWh</span>
+          </div>
+          <div class="budget-track" role="progressbar" id="budgetProgress" aria-label="Daily quota used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="60">
+            <div class="budget-fill" id="budgetFill"></div>
+          </div>
+          <p class="metric-note"><span id="remainingValue">2.40</span> kWh remaining today · resets at midnight</p>
+        </article>
+        <article class="metric">
+          <div class="metric-top">
+            <span class="metric-label">Room power right now</span>
+            <span class="metric-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13.2 2.8 5.6 13h5.2l-.4 8.2L18.4 11h-5.2l0-8.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          </div>
+          <div class="metric-main"><span class="metric-value" id="liveValue">1.07</span><span class="metric-unit">kW</span></div>
+          <p class="metric-note"><span id="activeCount">4</span> appliances on · simulated live draw</p>
+        </article>
+        <article class="metric metric-projection">
+          <div class="metric-top">
+            <span class="metric-label">Projected by midnight</span>
+            <span class="metric-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 19V5m0 14h17M7 15l4-4 3 2 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+          <div class="metric-main"><span class="metric-value" id="projectedValue">7.34</span><span class="metric-unit">kWh</span></div>
+          <p class="metric-note"><span id="projectionMessage">Above quota if current load continues</span></p>
+        </article>
+      </section>
+
+      <div class="dashboard-grid">
+        <section class="panel" id="appliances" aria-labelledby="appliances-title">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title" id="appliances-title">Your room appliances</h2>
+              <p class="panel-subtitle">A quick check-in before you head out or settle in.</p>
+            </div>
+            <button class="text-button" id="allOffButton" type="button">Turn all off</button>
+          </div>
+          <div class="section-rule"></div>
+          <div class="panel-head" style="padding-top:15px;padding-bottom:10px">
+            <div>
+              <p class="eyebrow" style="margin:0">ONE-TAP ROOM MODES</p>
+              <p class="panel-subtitle">Small routines for the moments that get busy.</p>
+            </div>
+          </div>
+          <div class="mode-row" role="group" aria-label="Room energy modes">
+            <button class="mode-button" type="button" data-mode="rush" aria-pressed="false">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2 4.5 13h6l-.5 9 9-12h-6l0-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              Rush to class
+            </button>
+            <button class="mode-button" type="button" data-mode="study" aria-pressed="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Deep study
+            </button>
+            <button class="mode-button" type="button" data-mode="night" aria-pressed="false">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Night reset
+            </button>
+          </div>
+          <div class="section-rule"></div>
+          <div class="panel-head" style="padding-top:15px;padding-bottom:12px">
+            <div>
+              <h3 class="panel-title" style="font-size:13px">Switches</h3>
+              <p class="panel-subtitle">Estimated power while each device is on.</p>
+            </div>
+            <span class="metric-tag" id="modeStatus">Deep study</span>
+          </div>
+          <div class="device-list" id="deviceList" aria-label="Room appliance switches">
+            <article class="device" data-device="ac" data-on="true">
+              <span class="device-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9h18M5 5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4v3M5 5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4v3m3-3v3m-4-7 2-2m4 2 2-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="device-copy"><span class="device-name">Portable AC</span><span class="device-meta"><span class="device-watts">950</span> W · <span class="device-setting">Standard</span></span></span>
+              <button class="switch" type="button" role="switch" aria-checked="true" aria-label="Portable AC"></button>
+            </article>
+            <article class="device" data-device="laptop" data-on="true">
+              <span class="device-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="12" rx="1.7" stroke="currentColor" stroke-width="1.7"/><path d="M2.5 20h19l-1.6-3H4.1l-1.6 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+              <span class="device-copy"><span class="device-name">Laptop</span><span class="device-meta"><span class="device-watts">65</span> W · Working</span></span>
+              <button class="switch" type="button" role="switch" aria-checked="true" aria-label="Laptop"></button>
+            </article>
+            <article class="device" data-device="monitor" data-on="true">
+              <span class="device-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="13" rx="1.8" stroke="currentColor" stroke-width="1.7"/><path d="M8 21h8m-4-4v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              <span class="device-copy"><span class="device-name">External monitor</span><span class="device-meta"><span class="device-watts">42</span> W · Active</span></span>
+              <button class="switch" type="button" role="switch" aria-checked="true" aria-label="External monitor"></button>
+            </article>
+            <article class="device" data-device="lamp" data-on="true">
+              <span class="device-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 18h6m-5 3h4m-2-19a7 7 0 0 0-4 12.7c.7.5 1 1.2 1 2.3h6c0-1.1.3-1.8 1-2.3A7 7 0 0 0 12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="device-copy"><span class="device-name">Desk light</span><span class="device-meta"><span class="device-watts">12</span> W · Warm light</span></span>
+              <button class="switch" type="button" role="switch" aria-checked="true" aria-label="Desk light"></button>
+            </article>
+            <article class="device" data-device="gpu" data-on="false">
+              <span class="device-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="11.5" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M7 19v2m10-2v2m-5-13v2m0 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+              <span class="device-copy"><span class="device-name">Gaming / GPU rig</span><span class="device-meta"><span class="device-watts">420</span> W · Standby</span></span>
+              <button class="switch" type="button" role="switch" aria-checked="false" aria-label="Gaming and GPU rig"></button>
+            </article>
+            <article class="device" data-device="fan" data-on="false">
+              <span class="device-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.6"/><path d="M12 10c-1-2-1-6 1-7 2-1 4 1 3 3-1 2-3 3-4 4Zm2 2c2-1 6-1 7 1 1 2-1 4-3 3-2-1-3-3-4-4Zm-2 2c1 2 1 6-1 7-2 1-4-1-3-3 1-2 3-3 4-4Zm-2-2c-2 1-6 1-7-1-1-2 1-4 3-3 2 1 3 3 4 4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span>
+              <span class="device-copy"><span class="device-name">Desk fan</span><span class="device-meta"><span class="device-watts">55</span> W · Off</span></span>
+              <button class="switch" type="button" role="switch" aria-checked="false" aria-label="Desk fan"></button>
+            </article>
+          </div>
+          <div class="control-foot">
+            <p>Projection assumes the current load stays on until midnight.</p>
+            <div class="remaining-control">
+              <label for="hoursLeft">Hours left today</label>
+              <input id="hoursLeft" type="range" min="1" max="8" step=".5" value="3.5" />
+              <span class="hours-value"><span id="hoursValue">3.5</span>h</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-stack" id="insights" aria-label="Energy insights and campus copilot">
+          <section class="copilot" aria-labelledby="copilot-title">
+            <div class="copilot-top">
+              <div class="copilot-brand"><span class="copilot-star" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="m12 2 1.8 7.2L21 12l-7.2 1.8L12 21l-1.8-7.2L3 12l7.2-2.8L12 2Z" fill="currentColor"/></svg></span> Campus Copilot</div>
+              <span class="sim-tag">SIMULATED</span>
+            </div>
+            <h2 id="copilot-title">A little energy nudge.</h2>
+            <p class="copilot-copy">A helpful room check-in, based on the switches you set here.</p>
+            <div class="insight-card" aria-live="polite">
+              <span class="insight-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.4-6.4-1.4 1.4M7 17l-1.4 1.4m12.8 0L17 17M7 7 5.6 5.6M15 9l-3 3-2-1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> ROOM INSIGHT</span>
+              <h3 id="insightTitle">Your AC is the biggest part of this room's live draw.</h3>
+              <p id="insightCopy">Try Eco cooling at 26°C while you study. The estimate updates instantly, and you can switch it back any time.</p>
+              <button class="apply-button" id="ecoButton" type="button">
+                Try Eco cooling <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+            <p class="copilot-foot">Suggestions are simulated—not a real AI service or an appliance control.</p>
+          </section>
+
+          <section class="panel quota-panel" aria-labelledby="quota-title">
+            <div class="panel-head quota-head">
+              <div>
+                <h2 class="panel-title" id="quota-title">Your energy rhythm</h2>
+                <p class="panel-subtitle">An illustrative day, not meter data.</p>
+              </div>
+              <span class="metric-tag">TODAY</span>
+            </div>
+            <div class="quota-set">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v18m6-14H9a3 3 0 1 0 0 6h6a3 3 0 1 1 0 6H6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              Daily dorm allocation
+              <strong><input id="quotaInput" aria-label="Daily quota in kilowatt hours" type="number" min="1" max="30" step=".5" value="6" /> kWh</strong>
+            </div>
+            <div class="chart-wrap">
+              <svg class="chart" viewBox="0 0 340 112" role="img" aria-labelledby="chartTitle chartDesc" preserveAspectRatio="none">
+                <title id="chartTitle">Illustrative energy use throughout today</title>
+                <desc id="chartDesc">A sample line chart of hourly campus room energy use.</desc>
+                <defs><linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#73a88a" stop-opacity=".2"/><stop offset="1" stop-color="#73a88a" stop-opacity="0"/></linearGradient></defs>
+                <path class="chart-grid" d="M28 20H330M28 48H330M28 76H330" />
+                <path class="chart-area" d="M28 74 C48 72 52 54 75 58 S106 45 124 48 S155 26 176 32 S208 55 226 48 S257 27 276 34 S309 49 330 25 V82 H28Z" />
+                <path class="chart-line" d="M28 74 C48 72 52 54 75 58 S106 45 124 48 S155 26 176 32 S208 55 226 48 S257 27 276 34 S309 49 330 25" />
+                <circle class="chart-point" cx="176" cy="32" r="4"/><circle class="chart-point" cx="330" cy="25" r="4"/>
+                <text class="chart-label" x="28" y="101">6 AM</text><text class="chart-label" x="99" y="101">9 AM</text><text class="chart-label" x="169" y="101">12 PM</text><text class="chart-label" x="241" y="101">3 PM</text><text class="chart-label" x="304" y="101">NOW</text>
+              </svg>
+              <div class="chart-caption"><span>Lower use</span><strong>Sample hourly pattern</strong><span>Higher use</span></div>
+            </div>
+          </section>
+
+          <section class="panel copilot-chat" aria-labelledby="chat-title">
+            <h2 class="chat-title" id="chat-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2v-9.5a7.5 7.5 0 1 1 15 0Zm-9-3v4m0 3h.01" transform="translate(1 -1)" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Ask about your room
+            </h2>
+            <div class="chat-log" id="chatLog" aria-live="polite" aria-label="Copilot conversation">
+              <div class="chat-message assistant">Try “How can I get under quota?” or “Rush to class”.</div>
+            </div>
+            <form class="chat-form" id="chatForm">
+              <label class="sr-only" for="chatInput">Ask a question about room energy</label>
+              <input id="chatInput" type="text" maxlength="160" placeholder="Ask a quick question…" autocomplete="off" />
+              <button type="submit" aria-label="Send question"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </form>
+            <p class="chat-disclaimer">Demo replies are generated locally from simple rules.</p>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <footer>
+      <span>Roomwise · A student-built campus energy prototype</span>
+      <span>Sample estimates only · <a href="#overview">Back to top ↑</a></span>
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const devices = {
+        ac: { watts: 950, ecoWatts: 550, on: true, setting: "Standard", label: "Portable AC" },
+        laptop: { watts: 65, on: true, label: "Laptop" },
+        monitor: { watts: 42, on: true, label: "External monitor" },
+        lamp: { watts: 12, on: true, label: "Desk light" },
+        gpu: { watts: 420, on: false, label: "Gaming / GPU rig" },
+        fan: { watts: 55, on: false, label: "Desk fan" }
+      };
+      const usedToday = 3.6;
+      const $ = (selector) => document.querySelector(selector);
+      const deviceElements = [...document.querySelectorAll(".device")];
+      const modeButtons = [...document.querySelectorAll("[data-mode]")];
+      const hoursSlider = $("#hoursLeft");
+      const quotaInput = $("#quotaInput");
+      let ecoMode = false;
+      let activeMode = "study";
+      let toastTimer;
+
+      const format = (number) => number.toFixed(2);
+      const liveWatts = () => Object.values(devices).reduce(
+        (sum, device) => sum + (device.on ? (device.ecoWatts && ecoMode ? device.ecoWatts : device.watts) : 0),
+        0
+      );
+
+      function announce(message) {
+        const toast = $("#toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2300);
+      }
+
+      function updateInsight(loadWatts, quota, projected) {
+        const ac = devices.ac;
+        const highest = Object.values(devices)
+          .filter((device) => device.on)
+          .sort((a, b) => b.watts - a.watts)[0];
+        const title = $("#insightTitle");
+        const copy = $("#insightCopy");
+        const button = $("#ecoButton");
+        if (ac.on && !ecoMode) {
+          title.textContent = "Your AC is the biggest part of this room's live draw.";
+          copy.textContent = "Try Eco cooling at 26°C while you study. The estimate updates instantly, and you can switch it back any time.";
+          button.hidden = false;
+          button.disabled = false;
+          button.innerHTML = 'Try Eco cooling <span aria-hidden="true">↗</span>';
+        } else if (projected > quota) {
+          title.textContent = "Your forecast is above today's sample allocation.";
+          copy.textContent = highest
+            ? `${highest.label} is using the most power right now. Try a room mode or switch off anything you're not using.`
+            : "Your past usage is already above the sample allocation. The switches can reduce new use, but can't undo energy already used.";
+          button.hidden = false;
+          button.disabled = false;
+          button.innerHTML = 'Try Rush to class <span aria-hidden="true">↗</span>';
+        } else {
+          title.textContent = "Your room forecast is within today's sample allocation.";
+          copy.textContent = "Nice balance. Check in before you leave, and switch off anything you won't need.";
+          button.hidden = false;
+          button.disabled = false;
+          button.innerHTML = 'Set Rush to class <span aria-hidden="true">↗</span>';
+        }
+        $("#projectionMessage").textContent = projected > quota
+          ? "Above quota if current load continues"
+          : "Within today's sample quota";
+      }
+
+      function updateDashboard() {
+        const quota = Math.min(30, Math.max(1, Number(quotaInput.value) || 6));
+        const watts = liveWatts();
+        const loadKw = watts / 1000;
+        const hours = Number(hoursSlider.value);
+        const projected = usedToday + loadKw * hours;
+        const percent = (usedToday / quota) * 100;
+        const fill = $("#budgetFill");
+        const metric = $("#budgetMetric");
+        const status = $("#quotaStatus");
+        const usedPercent = Math.min(100, percent);
+
+        $("#usedValue").textContent = format(usedToday);
+        $("#quotaValue").textContent = format(quota);
+        $("#remainingValue").textContent = format(Math.max(0, quota - usedToday));
+        $("#liveValue").textContent = (loadKw).toFixed(2);
+        $("#activeCount").textContent = Object.values(devices).filter((device) => device.on).length;
+        $("#projectedValue").textContent = format(projected);
+        $("#hoursValue").textContent = hours.toFixed(1);
+        fill.style.width = `${usedPercent}%`;
+        $("#budgetProgress").setAttribute("aria-valuenow", format(usedToday));
+        $("#budgetProgress").setAttribute("aria-valuemax", format(quota));
+        metric.classList.toggle("is-warning", percent >= 75 && percent < 95);
+        metric.classList.toggle("is-danger", percent >= 95);
+        status.className = "metric-tag" + (percent >= 95 ? " danger" : percent >= 75 ? " warning" : "");
+        status.innerHTML = percent >= 95
+          ? '<span aria-hidden="true">●</span> Nearly used'
+          : percent >= 75
+            ? '<span aria-hidden="true">●</span> Watch usage'
+            : '<span aria-hidden="true">●</span> On track';
+
+        for (const element of deviceElements) {
+          const key = element.dataset.device;
+          const device = devices[key];
+          const wattsElement = element.querySelector(".device-watts");
+          const settingElement = element.querySelector(".device-setting");
+          const switchButton = element.querySelector(".switch");
+          element.dataset.on = String(device.on);
+          switchButton.setAttribute("aria-checked", String(device.on));
+          const currentWatts = device.ecoWatts && ecoMode ? device.ecoWatts : device.watts;
+          wattsElement.textContent = currentWatts;
+          const meta = element.querySelector(".device-meta");
+          if (key === "ac") meta.innerHTML = `<span class="device-watts">${currentWatts}</span> W · <span class="device-setting">${device.on ? device.setting : "Off"}</span>`;
+          else meta.innerHTML = `<span class="device-watts">${device.watts}</span> W · ${device.on ? (key === "laptop" ? "Working" : key === "lamp" ? "Warm light" : "Active") : "Off"}`;
+        }
+        updateInsight(watts, quota, projected);
+      }
+
+      function setMode(mode) {
+        activeMode = mode;
+        if (mode === "rush") {
+          Object.values(devices).forEach((device) => { device.on = false; });
+          ecoMode = false;
+          $("#modeStatus").textContent = "Rush to class";
+          announce("Rush to class mode set — all demo switches are off.");
+        } else if (mode === "study") {
+          Object.assign(devices, {
+            ac: { ...devices.ac, on: true, setting: "Eco · 26°C" },
+            laptop: { ...devices.laptop, on: true },
+            monitor: { ...devices.monitor, on: true },
+            lamp: { ...devices.lamp, on: true },
+            gpu: { ...devices.gpu, on: false },
+            fan: { ...devices.fan, on: false }
+          });
+          ecoMode = true;
+          $("#modeStatus").textContent = "Deep study · Eco";
+          announce("Deep study mode set with Eco cooling.");
+        } else {
+          Object.assign(devices, {
+            ac: { ...devices.ac, on: true, setting: "Eco · 26°C" },
+            laptop: { ...devices.laptop, on: false },
+            monitor: { ...devices.monitor, on: false },
+            lamp: { ...devices.lamp, on: false },
+            gpu: { ...devices.gpu, on: false },
+            fan: { ...devices.fan, on: false }
+          });
+          ecoMode = true;
+          $("#modeStatus").textContent = "Night reset · Eco";
+          announce("Night reset mode set — unused desk devices are off.");
+        }
+        modeButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.mode === mode)));
+        updateDashboard();
+      }
+
+      deviceElements.forEach((element) => {
+        const button = element.querySelector(".switch");
+        button.addEventListener("click", () => {
+          const key = element.dataset.device;
+          devices[key].on = !devices[key].on;
+          if (key === "ac" && !devices.ac.on) ecoMode = false;
+          activeMode = "custom";
+          $("#modeStatus").textContent = "Custom setup";
+          modeButtons.forEach((modeButton) => modeButton.setAttribute("aria-pressed", "false"));
+          updateDashboard();
+        });
+      });
+
+      modeButtons.forEach((button) => {
+        button.addEventListener("click", () => setMode(button.dataset.mode));
+      });
+
+      $("#allOffButton").addEventListener("click", () => setMode("rush"));
+      hoursSlider.addEventListener("input", updateDashboard);
+      quotaInput.addEventListener("input", updateDashboard);
+
+      $("#ecoButton").addEventListener("click", () => {
+        if (devices.ac.on && !ecoMode) {
+          ecoMode = true;
+          devices.ac.setting = "Eco · 26°C";
+          $("#modeStatus").textContent = "Custom setup · Eco";
+          activeMode = "custom";
+          modeButtons.forEach((button) => button.setAttribute("aria-pressed", "false"));
+          updateDashboard();
+          announce("Eco cooling applied to the demo estimate.");
+        } else {
+          setMode("rush");
+        }
+      });
+
+      const chatForm = $("#chatForm");
+      const chatInput = $("#chatInput");
+      const chatLog = $("#chatLog");
+      function addMessage(text, kind) {
+        const message = document.createElement("div");
+        message.className = `chat-message ${kind}`;
+        message.textContent = text;
+        chatLog.append(message);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+      function localReply(question) {
+        const q = question.toLowerCase();
+        const quota = Math.min(30, Math.max(1, Number(quotaInput.value) || 6));
+        const forecast = usedToday + liveWatts() / 1000 * Number(hoursSlider.value);
+        if (q.includes("rush") || q.includes("class") || q.includes("leave")) {
+          setMode("rush");
+          return "Rush to class is set. Every demo switch is off—please check actual appliances before leaving.";
+        }
+        if (q.includes("study") || q.includes("mode")) {
+          setMode("study");
+          return "Deep study is set: laptop, monitor, desk light, and Eco AC. The GPU rig stays off.";
+        }
+        if (q.includes("quota") || q.includes("under") || q.includes("save")) {
+          if (devices.ac.on && !ecoMode) {
+            ecoMode = true;
+            devices.ac.setting = "Eco · 26°C";
+            $("#modeStatus").textContent = "Custom setup · Eco";
+            modeButtons.forEach((button) => button.setAttribute("aria-pressed", "false"));
+            $("#currentDate").textContent = new Intl.DateTimeFormat("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric"
+            }).format(new Date()).toUpperCase();
+            updateDashboard();
+            return `Eco cooling lowers this sample's estimated room draw. Forecast: ${format(usedToday + liveWatts() / 1000 * Number(hoursSlider.value))} of ${format(quota)} kWh.`;
+          }
+          return forecast <= quota
+            ? `The current sample forecast is ${format(forecast)} of ${format(quota)} kWh. Keep unused devices off.`
+            : `The sample forecast is ${format(forecast)} kWh, above the ${format(quota)} kWh allocation. Try Rush to class when you leave, or turn off unused devices.`;
+        }
+        const largest = Object.values(devices).filter((device) => device.on).sort((a, b) => b.watts - a.watts)[0];
+        return largest
+          ? `${largest.label} is the largest active sample load. Switch it off when it isn't needed; this prototype only updates estimates.`
+          : "Everything is off in this prototype. Check your real room before heading out.";
+      }
+      chatForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const question = chatInput.value.trim();
+        if (!question) return;
+        addMessage(question, "user");
+        chatInput.value = "";
+        const reply = localReply(question);
+        setTimeout(() => addMessage(reply, "assistant"), 220);
+      });
+
+      updateDashboard();
+    })();
+  </script>
+</body>
+</html>
